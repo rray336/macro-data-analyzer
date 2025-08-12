@@ -96,32 +96,42 @@ function App() {
   const selectedImage = images.find((img) => String(img.id) === String(selectedImageId));
 
   return (
-    <div style={{ maxWidth: 700, margin: "20px auto", fontFamily: "Arial, sans-serif" }}>
-      <h1>Excel Macro Data Analyzer</h1>
+    <div className="app-container">
+      <h1 className="app-title">📊 Macro Data Analyzer (with AI)</h1>
+      <p className="app-subtitle">Intelligent image analysis with AI-powered insights</p>
 
-      <div style={{ marginBottom: 20 }}>
-        <input
-          type="file"
-          accept=".xlsx"
-          onChange={handleFileChange}
-          disabled={loading}
-        />
-        <button onClick={handleUpload} disabled={loading} style={{ marginLeft: 10 }}>
-          {loading ? "Uploading..." : "Upload"}
-        </button>
+      <div className="upload-section">
+        <div className="file-input">
+          <input
+            type="file"
+            accept=".xlsx"
+            onChange={handleFileChange}
+            disabled={loading}
+          />
+          <button 
+            onClick={handleUpload} 
+            disabled={loading} 
+            className="btn btn-primary"
+          >
+            {loading && <span className="loading-spinner"></span>}
+            {loading ? "Uploading..." : "📤 Upload File"}
+          </button>
+        </div>
       </div>
 
       {error && (
-        <div style={{ color: "red", marginBottom: 20 }}>
+        <div className="error-message">
           <strong>Error:</strong> {error}
         </div>
       )}
 
       {sheets.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
-          <label>
-            <strong>Select Sheet:</strong>{" "}
+        <div className="section">
+          <h2 className="section-title">📊 Select Worksheet</h2>
+          <div className="form-group">
+            <label className="form-label">Choose a sheet to analyze:</label>
             <select
+              className="form-select"
               value={selectedSheet}
               onChange={(e) => setSelectedSheet(e.target.value)}
               disabled={loading}
@@ -133,15 +143,17 @@ function App() {
                 </option>
               ))}
             </select>
-          </label>
+          </div>
         </div>
       )}
 
       {images.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
-          <label>
-            <strong>Select Chart/Image:</strong>{" "}
+        <div className="section">
+          <h2 className="section-title">📈 Available Charts</h2>
+          <div className="form-group">
+            <label className="form-label">Select an image to analyze:</label>
             <select
+              className="form-select"
               value={selectedImageId || ""}
               onChange={(e) => setSelectedImageId(e.target.value)}
               disabled={loading}
@@ -153,31 +165,39 @@ function App() {
                 </option>
               ))}
             </select>
-          </label>
+          </div>
         </div>
       )}
 
       {selectedImageId && selectedImage && (
-        <div>
-          <h3>{selectedImage.title || `Image ${selectedImageId}`}</h3>
-          
-          {selectedImage.period && (
-            <div style={{ marginBottom: 5, fontSize: 14 }}>
-              {selectedImage.period}
+        <div className="section">
+          <div className="image-preview">
+            <h2 className="image-title">{selectedImage.title || `Image ${selectedImageId}`}</h2>
+            
+            {selectedImage.period && (
+              <div className="image-meta">
+                <strong>Period:</strong> {selectedImage.period}
+              </div>
+            )}
+            
+            {selectedImage.ai && (
+              <div className="ai-response">
+                <div className="ai-response-header">
+                  <h3 className="ai-response-title">AI Analysis</h3>
+                </div>
+                <div className="ai-response-content">
+                  {selectedImage.ai}
+                </div>
+              </div>
+            )}
+            
+            <div className="image-display">
+              <img
+                src={`http://localhost:5000/image/${selectedImageId}`}
+                alt={selectedImage.title || `Chart ${selectedImageId}`}
+              />
             </div>
-          )}
-          
-          {selectedImage.ai && (
-            <div style={{ marginBottom: 10, fontSize: 14 }}>
-              {selectedImage.ai}
-            </div>
-          )}
-          
-          <img
-            src={`http://localhost:5000/image/${selectedImageId}`}
-            alt={selectedImage.title || `Chart ${selectedImageId}`}
-            style={{ maxWidth: "100%", border: "1px solid #ccc", borderRadius: 4 }}
-          />
+          </div>
         </div>
       )}
     </div>

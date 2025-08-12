@@ -216,10 +216,13 @@ app.post("/analyze", express.urlencoded({ extended: true }), async (req, res) =>
           mimeType = "image/gif";
         }
         
-        // Generate cache key: combination of image ID and AI prompt
-        const cacheKey = `img_${img.imageId}_${Buffer.from(ai).toString('base64')}`;
+        // Prepend the AI prompt with word limit instruction
+        const aiPromptWithLimit = `Limit your response to 200 words. ${ai}`;
         
-        ai = await getOpenAIResponse(ai, imageData?.buffer, mimeType, cacheKey);
+        // Generate cache key: combination of image ID and AI prompt
+        const cacheKey = `img_${img.imageId}_${Buffer.from(aiPromptWithLimit).toString('base64')}`;
+        
+        ai = await getOpenAIResponse(aiPromptWithLimit, imageData?.buffer, mimeType, cacheKey);
       }
 
       // Use title as image name, fallback to original naming
