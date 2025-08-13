@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 const ExcelJS = require("exceljs");
 const XLSX = require("xlsx");
 const OpenAI = require("openai");
@@ -35,6 +36,29 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
+// Function to clean up old files (older than 30 minutes)
+const cleanupOldFiles = async () => {
+  try {
+    const uploadsDir = path.join(__dirname, "uploads");
+    const files = await fs.promises.readdir(uploadsDir);
+    const thirtyMinutesAgo = Date.now() - (30 * 60 * 1000); // 30 minutes in milliseconds
+    
+    for (const file of files) {
+      const filePath = path.join(uploadsDir, file);
+      const stats = await fs.promises.stat(filePath);
+      
+      // Delete files older than 30 minutes
+      if (stats.mtime.getTime() < thirtyMinutesAgo) {
+        await fs.promises.unlink(filePath);
+        console.log(`Deleted old file: ${file}`);
+      }
+    }
+  } catch (error) {
+    console.error("Error during file cleanup:", error);
+    // Don't throw - cleanup failure shouldn't break uploads
+  }
+};
+
 // Test route
 app.get("/", (req, res) => {
   res.send("Server running");
@@ -45,6 +69,9 @@ app.post("/upload", upload.single("excelFile"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
   }
+
+  // Clean up old files before processing new upload
+  await cleanupOldFiles();
 
   try {
     const workbook = new ExcelJS.Workbook();
