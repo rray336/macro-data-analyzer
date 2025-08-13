@@ -59,11 +59,6 @@ const cleanupOldFiles = async () => {
   }
 };
 
-// Test route
-app.get("/", (req, res) => {
-  res.send("Server running");
-});
-
 // Upload route: receive Excel file, return sheets
 app.post("/upload", upload.single("excelFile"), async (req, res) => {
   if (!req.file) {
