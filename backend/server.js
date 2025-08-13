@@ -317,6 +317,20 @@ app.get("/image/:imageId", async (req, res) => {
   }
 });
 
+// Serve static files from React build (for production)
+const frontendBuildPath = path.join(__dirname, "../frontend/dist");
+app.use(express.static(frontendBuildPath));
+
+// For any non-API routes, serve the React app
+app.use((req, res, next) => {
+  // If it's an API route, let it continue
+  if (req.path.startsWith('/upload') || req.path.startsWith('/analyze') || req.path.startsWith('/image')) {
+    return next();
+  }
+  // Otherwise serve React app
+  res.sendFile(path.join(frontendBuildPath, 'index.html'));
+});
+
 app.listen(PORT, () => {
   console.log(`✅ Backend server running on http://localhost:${PORT}`);
 });

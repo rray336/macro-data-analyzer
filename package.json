@@ -1,0 +1,14 @@
+{
+  "name": "macro-data-analyzer",
+  "version": "1.0.0",
+  "description": "Excel Macro Data Analyzer with AI-powered analysis",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build",
+    "start": "cd backend && npm install && npm start",
+    "dev:backend": "cd backend && npm start",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
+  "keywords": ["excel", "ai", "analysis", "openai"],
+  "author": "",
+  "license": "ISC"
+}

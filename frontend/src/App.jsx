@@ -32,7 +32,7 @@ function App() {
     formData.append("excelFile", file);
 
     try {
-      const res = await fetch("http://localhost:5000/upload", {
+      const res = await fetch("/upload", {
         method: "POST",
         body: formData,
       });
@@ -67,7 +67,7 @@ function App() {
         params.append("filePath", filePath);
         params.append("sheetName", selectedSheet);
 
-        const res = await fetch("http://localhost:5000/analyze", {
+        const res = await fetch("/analyze", {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -194,7 +194,7 @@ function App() {
             
             <div className="image-display">
               <img
-                src={`http://localhost:5000/image/${selectedImageId}`}
+                src={`/image/${selectedImageId}`}
                 alt={selectedImage.title || `Chart ${selectedImageId}`}
               />
             </div>
