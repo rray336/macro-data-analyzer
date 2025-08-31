@@ -101,6 +101,30 @@ function App() {
       <h1 className="app-title">📊 Macro Data Analyzer (with AI)</h1>
       <p className="app-subtitle">Intelligent image analysis with AI-powered insights</p>
 
+      <div className="welcome-section">
+        <div className="welcome-content">
+          <h2 className="welcome-title">Thank you for visiting.</h2>
+          <p className="welcome-text">
+            The name <em>Macro Data Analyzer</em> comes from my own use case—tracking 100+ macroeconomic and commodity datapoints, where I needed a natural language (AI) overlay to help shape narratives.
+          </p>
+          <p className="welcome-text">
+            That said, the app is more general-purpose. It can:
+          </p>
+          <ul className="capabilities-list">
+            <li>Analyze charts or analytics (in the form of images) and provide natural language descriptions.</li>
+            <li>Process multi-sheet Excel files, with each sheet containing charts/analytics as images.</li>
+            <li>Use simple image tags (top-left of each image):
+              <ol className="tags-list">
+                <li><strong>Title</strong></li>
+                <li><strong>Period</strong> (last updated)</li>
+                <li><strong>AI</strong> (a question specific to that image)</li>
+              </ol>
+            </li>
+            <li>Cache the LLM analysis so each sheet is only processed once per session.</li>
+          </ul>
+        </div>
+      </div>
+
       <div className="upload-section">
         <div className="file-input">
           <input
