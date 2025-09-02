@@ -21,35 +21,43 @@ function App() {
   };
 
   const handleUpload = async () => {
-    if (!file) {
-      setError("Please select an Excel file first.");
-      return;
-    }
     setError("");
     setLoading(true);
 
-    const formData = new FormData();
-    formData.append("excelFile", file);
-
     try {
-      const res = await fetch("/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
+      let res, data;
+      
+      if (file) {
+        // Use uploaded file
+        const formData = new FormData();
+        formData.append("excelFile", file);
+        
+        res = await fetch("/upload", {
+          method: "POST",
+          body: formData,
+        });
+        data = await res.json();
+      } else {
+        // Use default file when no file is selected
+        res = await fetch("/use-default", {
+          method: "POST",
+        });
+        data = await res.json();
+      }
 
       if (res.ok) {
         setFilePath(data.filePath);
         setSheets(data.sheets);
       } else {
-        setError(data.error || "Upload failed");
+        setError(data.error || "Processing failed");
       }
     } catch (err) {
-      setError("Upload failed");
+      setError(file ? "Upload failed" : "Failed to load default file");
     } finally {
       setLoading(false);
     }
   };
+
 
   // Fetch images when selectedSheet changes
   useEffect(() => {
@@ -139,7 +147,7 @@ function App() {
             className="btn btn-primary"
           >
             {loading && <span className="loading-spinner"></span>}
-            {loading ? "Uploading..." : "📤 Upload File"}
+            {loading ? (file ? "Uploading..." : "Loading Default File...") : "📤 Upload File"}
           </button>
         </div>
       </div>

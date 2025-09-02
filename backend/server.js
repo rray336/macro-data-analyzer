@@ -66,6 +66,52 @@ const cleanupOldFiles = async () => {
   }
 };
 
+// Use default file route: download SharePoint file and process it
+app.post("/use-default", async (req, res) => {
+  // SharePoint direct download URL format
+  const defaultFileUrl = "https://tysononline-my.sharepoint.com/personal/rahul_ray_tyson_com/_layouts/15/download.aspx?SourceUrl=%2Fpersonal%2Frahul%5Fray%5Ftyson%5Fcom%2FDocuments%2FIR%2FSELL%2DSIDE%20MODEL%2FTSN%20External%20Datapoints%2DIR%2Exlsx";
+  
+  try {
+    // Clean up old files before processing new download
+    await cleanupOldFiles();
+
+    // Download the file from SharePoint
+    const response = await fetch(defaultFileUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to download file: ${response.status} ${response.statusText}`);
+    }
+
+    const buffer = await response.arrayBuffer();
+    const filename = `default-${Date.now()}.xlsx`;
+    const filePath = path.join(__dirname, "uploads", filename);
+    
+    // Save the downloaded file
+    await fs.promises.writeFile(filePath, Buffer.from(buffer));
+
+    // Process the file using the same logic as upload
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.readFile(filePath);
+
+    const sheetNames = workbook.worksheets.map((ws) => ws.name);
+
+    // Save file path globally for image serving
+    global.lastUploadedFilePath = filePath;
+
+    // Clear AI response cache when new file is downloaded
+    Object.keys(aiResponseCache).forEach(key => delete aiResponseCache[key]);
+    console.log("AI response cache cleared due to default file download");
+
+    res.json({
+      message: "Default file loaded successfully",
+      filePath: filePath,
+      sheets: sheetNames,
+    });
+  } catch (err) {
+    console.error("Error downloading/processing default file:", err);
+    res.status(500).json({ error: "Failed to load default file" });
+  }
+});
+
 // Upload route: receive Excel file, return sheets
 app.post("/upload", upload.single("excelFile"), async (req, res) => {
   if (!req.file) {
